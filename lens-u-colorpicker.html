@@ -1,0 +1,66 @@
+<link rel="import" href="../polymer/polymer.html"> 
+<link rel="import" href="../th-theme/th-theme.html"> 
+<link rel="import" href="../core-collapse/core-collapse.html"> 
+<link rel="import" href="../core-icons/core-icons.html"> 
+
+<!--
+A Thelma component providing solution to no problem in particular.
+
+##### Example
+
+    <lens-u-colorpicker></lens-u-colorpicker>
+
+@element lens-u-colorpicker
+@blurb Element providing solution to no problem in particular.
+@status alpha
+@homepage http://lenses.github.io/lens-u-colorpicker
+-->
+
+<polymer-element name="lens-u-colorpicker" attributes="color">
+  <template>
+    <core-style ref="theme"></core-style>
+    <link href="../flexi-color-picker/themes.css" media="all" rel="stylesheet" type="text/css" />
+    <link rel="stylesheet" href="lens-u-colorpicker.css">
+    
+    <div id="color" on-click="{{toggleColorPicker}}" style="background-color:{{color}}">{{color}}<core-icon icon="arrow-drop-down" style="display: inline-block; position: absolute; right: 0; top: 0"></core-icon> </div>
+    <core-collapse id="collapse">
+      <div class="color-picker">
+        <template repeat="{{color in themeColors}}">
+          <span class="swatch" title="{{color}}" on-click="{{selectColor}}" style="background-color:{{color}}"></span>
+        </template>
+      </div>
+      <div id="picker" class="cp-small"></div>
+    </core-collapse>
+
+  </template>
+  <script type="text/javascript" src="../flexi-color-picker/colorpicker.js"></script>
+  <script>
+    Polymer({
+      ready: function () {
+        this.getColors();
+        ColorPicker(this.$.picker, function(hex, hsv, rgb) {
+          this.color = hex;
+        }.bind(this));
+      },
+      toggleColorPicker: function(){
+        this.$.collapse.toggle(); 
+      },
+      selectColor: function(e, detail, selection){
+        this.color = selection.title;
+      },
+      getColors: function(){
+        var theme  = window.CoreStyle.g.theme;
+        this.themeColors = [];
+
+        for (var color in theme){
+          if(/^accent/.test(color)){
+            this.themeColors.push(theme[color]);
+          }
+        }
+        
+        this.themeColors.push(theme['background']);
+        this.themeColors.push(theme['foreground1']);
+      }
+    });
+  </script>
+</polymer-element>

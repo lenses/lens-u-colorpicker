@@ -1,0 +1,13 @@
+{
+  "name": "lens-u-colorpicker",
+  "version": "0.0.0",
+  "keywords": "thelma, polymer, web-components",
+  "main": "lens-u-colorpicker.html",
+  "dependencies": {
+    "th-theme": "thelmanews/th-theme",
+    "polymer": "Polymer/polymer#~0.5.5",
+    "flexi-color-picker": "DavidDurman/FlexiColorPicker",
+    "core-icon": "polymer/core-icon#~0.5.5",
+    "core-collapse": "polymer/core-collapse#~0.5.5"
+  }
+}
