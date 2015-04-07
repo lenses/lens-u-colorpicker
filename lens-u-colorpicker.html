@@ -16,7 +16,7 @@ A Thelma component providing solution to no problem in particular.
 @homepage http://lenses.github.io/lens-u-colorpicker
 -->
 
-<polymer-element name="lens-u-colorpicker" attributes="color">
+<polymer-element name="lens-u-colorpicker" attributes="color presetColors">
   <template>
     <core-style ref="theme"></core-style>
     <link href="../flexi-color-picker/themes.css" media="all" rel="stylesheet" type="text/css" />
@@ -25,7 +25,7 @@ A Thelma component providing solution to no problem in particular.
     <div id="color" on-click="{{toggleColorPicker}}" style="background-color:{{color}}">{{color}}<core-icon icon="arrow-drop-down" style="display: inline-block; position: absolute; right: 0; top: 0"></core-icon> </div>
     <core-collapse id="collapse">
       <div class="color-picker">
-        <template repeat="{{color in themeColors}}">
+        <template repeat="{{color in presetColors}}">
           <span class="swatch" title="{{color}}" on-click="{{selectColor}}" style="background-color:{{color}}"></span>
         </template>
       </div>
@@ -50,16 +50,16 @@ A Thelma component providing solution to no problem in particular.
       },
       getColors: function(){
         var theme  = window.CoreStyle.g.theme;
-        this.themeColors = [];
+        this.presetColors = this.presetColors || [];
 
         for (var color in theme){
           if(/^accent/.test(color)){
-            this.themeColors.push(theme[color]);
+            this.presetColors.push(theme[color]);
           }
         }
         
-        this.themeColors.push(theme['background']);
-        this.themeColors.push(theme['foreground1']);
+        this.presetColors.push(theme['background']);
+        this.presetColors.push(theme['foreground1']);
       }
     });
   </script>
