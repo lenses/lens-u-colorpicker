@@ -1,13 +1,31 @@
 {
   "name": "lens-u-colorpicker",
-  "version": "0.0.0",
-  "keywords": "thelma, polymer, web-components",
+  "version": "1.0.0",
+  "authors": [
+    "Anonymous <anonymous@example.com>"
+  ],
+  "description": "An element providing a solution to no problem in particular.",
+  "keywords": [
+    "web-component",
+    "web-components",
+    "polymer",
+    "seed"
+  ],
   "main": "lens-u-colorpicker.html",
+  "license": "http://polymer.github.io/LICENSE.txt",
+  "homepage": "https://github.com/<USERNAME>/seed-element/",
+  "ignore": [
+    "/.*",
+    "/test/",
+    "/demo/"
+  ],
   "dependencies": {
-    "th-theme": "thelmanews/th-theme",
-    "polymer": "Polymer/polymer#~0.5.5",
     "flexi-color-picker": "DavidDurman/FlexiColorPicker",
-    "core-icon": "polymer/core-icon#~0.5.5",
-    "core-collapse": "polymer/core-collapse#~0.5.5"
+    "iron-input": "polymerelements/iron-input#~1.0.3",
+    "polymer": "Polymer/polymer#^1.0.0"
+  },
+  "devDependencies": {
+    "iron-component-page": "PolymerElements/iron-component-page#^1.0.0",
+    "web-component-tester": "*"
   }
 }

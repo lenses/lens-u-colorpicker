@@ -1,66 +1,164 @@
-<link rel="import" href="../polymer/polymer.html"> 
-<link rel="import" href="../th-theme/th-theme.html"> 
-<link rel="import" href="../core-collapse/core-collapse.html"> 
-<link rel="import" href="../core-icons/core-icons.html"> 
+<!--
+@license
+Copyright (c) 2015 The Polymer Project Authors. All rights reserved.
+This code may only be used under the BSD style license found at http://polymer.github.io/LICENSE.txt
+The complete set of authors may be found at http://polymer.github.io/AUTHORS.txt
+The complete set of contributors may be found at http://polymer.github.io/CONTRIBUTORS.txt
+Code distributed by Google as part of the polymer project is also
+subject to an additional IP rights grant found at http://polymer.github.io/PATENTS.txt
+-->
+<link rel="import" href="../polymer/polymer.html">
+<link rel="import" href="../iron-icons/iron-icons.html">
+
 
 <!--
-A Thelma component providing solution to no problem in particular.
+An element providing a solution to no problem in particular.
 
-##### Example
+Example:
 
     <lens-u-colorpicker></lens-u-colorpicker>
 
-@element lens-u-colorpicker
-@blurb Element providing solution to no problem in particular.
-@status alpha
-@homepage http://lenses.github.io/lens-u-colorpicker
+@demo
 -->
+<dom-module id="lens-u-colorpicker">
+  <style>
+    :host {
+      display: block;
+      box-sizing: border-box;
+      width: 300px;
+      height: 300px;
+      --test-color: blue;
+      /*background-color: var(--accent1);*/
+    }
 
-<polymer-element name="lens-u-colorpicker" attributes="color presetColors">
+    .fill-background {
+      
+    }
+
+
+    #color {
+      height: 26px;
+      width: 100%;
+      background-color: var(--selected-color);
+    }
+
+    .accent-colors {
+      color: var(--test-color);
+
+
+    }
+
+  
+
+  </style>
+
   <template>
-    <core-style ref="theme"></core-style>
-    <link href="../flexi-color-picker/themes.css" media="all" rel="stylesheet" type="text/css" />
-    <link rel="stylesheet" href="lens-u-colorpicker.css">
-    
-    <div id="color" on-click="{{toggleColorPicker}}" style="background-color:{{color}}">{{color}}<core-icon icon="arrow-drop-down" style="display: inline-block; position: absolute; right: 0; top: 0"></core-icon> </div>
-    <core-collapse id="collapse">
-      <div class="color-picker">
-        <template repeat="{{color in presetColors}}">
-          <span class="swatch" title="{{color}}" on-click="{{selectColor}}" style="background-color:{{color}}"></span>
-        </template>
-      </div>
-      <div id="picker" class="cp-small"></div>
-    </core-collapse>
-
+    <div id="color">{{color}}</div>
+    <div class="fill-background">
+      <template is="dom-repeat" items="{{themeColors}}">
+        <span class="accent-colors">{{index}}</span>
+      </template>
+    </div>
+    <div id="picker" class="cp-small"></div>
   </template>
-  <script type="text/javascript" src="../flexi-color-picker/colorpicker.js"></script>
-  <script>
-    Polymer({
-      ready: function () {
-        this.getColors();
-        ColorPicker(this.$.picker, function(hex, hsv, rgb) {
+
+</dom-module>
+<script type="text/javascript" src="../flexi-color-picker/colorpicker.js"></script>
+<script>
+
+  Polymer({
+
+    is: 'lens-u-colorpicker',
+
+    properties: {
+
+      /**
+       * `fancy` indicates that the element should don a monocle and tophat,
+       * while checking its pocket watch.
+       */
+      color:  {
+        type: String,
+        value: '',
+        // observer: 'colorChanged'
+      },
+    },
+    listeners: {
+      'picker.tap': '_changeColor',
+      'picker.track': '_changeColor'
+    },
+
+    // Element Lifecycle
+    _changeColor: function(){
+      
+      this.customStyle['--selected-color'] = this.color;
+      console.log(this.customStyle);
+      // Updates the color reflected in stylesheet. Why doesn't this.updateStyles() work, like suggested in the docs?
+      Polymer.updateStyles();
+    },
+    ready: function() {
+      this.customStyle['--selected-color'] = 'pink';
+      this.themeColors = ['green', 'yellow', 'blue'];
+      // `ready` is called after all elements have been configured, but
+      // propagates bottom-up. This element's children are ready, but parents
+      // are not.
+      //
+      // This is the point where you should make modifications to the DOM (when
+      // necessary), or kick off any processes the element wants to perform.
+      var colorPicker = ColorPicker(this.$.picker, function(hex, hsv, rgb) {
           this.color = hex;
         }.bind(this));
-      },
-      toggleColorPicker: function(){
-        this.$.collapse.toggle(); 
-      },
-      selectColor: function(e, detail, selection){
-        this.color = selection.title;
-      },
-      getColors: function(){
-        var theme  = window.CoreStyle.g.theme;
-        this.presetColors = this.presetColors || [];
 
-        for (var color in theme){
-          if(/^accent/.test(color)){
-            this.presetColors.push(theme[color]);
-          }
-        }
-        
-        this.presetColors.push(theme['background']);
-        this.presetColors.push(theme['foreground1']);
-      }
-    });
-  </script>
-</polymer-element>
+      console.log(colorPicker);
+      this.updateStyles();
+    },
+
+    attached: function() {
+
+      // `attached` fires once the element and its parents have been inserted
+      // into a document.
+      //
+      // This is a good place to perform any work related to your element's
+      // visual state or active behavior (measuring sizes, beginning animations,
+      // loading resources, etc).
+    },
+
+    detached: function() {
+      // The analog to `attached`, `detached` fires when the element has been
+      // removed from a document.
+      //
+      // Use this to clean up anything you did in `attached`.
+    },
+
+    // Element Behavior
+
+    /**
+     * The `lens-u-colorpicker-lasers` event is fired whenever `fireLasers` is called.
+     *
+     * @event lens-u-colorpicker-lasers
+     * @detail {{sound: String}}
+     */
+
+    /**
+     * Sometimes it's just nice to say hi.
+     *
+     * @param {string} greeting A positive greeting.
+     * @return {string} The full greeting.
+     */
+    sayHello: function(greeting) {
+      var response = greeting || 'Hello World!';
+      return 'lens-u-colorpicker says, ' + response;
+    },
+
+    /**
+     * Attempts to destroy this element's enemies with an any beam of light!
+     *
+     * Or, at least, dispatches an event in the vain hope that someone else will
+     * do the zapping.
+     */
+    fireLasers: function() {
+      this.fire('lens-u-colorpicker-lasers', {sound: 'Pew pew!'});
+    }
+
+  });
+
+</script>
