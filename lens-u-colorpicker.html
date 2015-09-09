@@ -9,6 +9,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 -->
 <link rel="import" href="../polymer/polymer.html">
 <link rel="import" href="../iron-icons/iron-icons.html">
+<link rel="import" href="theme-styles.html">
 
 
 <!--
@@ -21,14 +22,15 @@ Example:
 @demo
 -->
 <dom-module id="lens-u-colorpicker">
+  <style include="theme-styles"></style>
   <style>
     :host {
       display: block;
       box-sizing: border-box;
       width: 300px;
       height: 300px;
-      --test-color: blue;
-      /*background-color: var(--accent1);*/
+      
+      background-color: var(--background);
     }
 
     .fill-background {
@@ -42,13 +44,17 @@ Example:
       background-color: var(--selected-color);
     }
 
-    .accent-colors {
-      color: var(--test-color);
-
-
+/*    .accent0 {
+      background-color: var(--accent0);
     }
 
+    .accent1 {
+      background-color: var(--accent1);
+    }
   
+    .accent2 {
+      background-color: var(--accent2);
+    }*/
 
   </style>
 
@@ -56,7 +62,7 @@ Example:
     <div id="color">{{color}}</div>
     <div class="fill-background">
       <template is="dom-repeat" items="{{themeColors}}">
-        <span class="accent-colors">{{index}}</span>
+        <span class$="{{ accentClass(index) }}">{{index}}</span>
       </template>
     </div>
     <div id="picker" class="cp-small"></div>
@@ -157,6 +163,9 @@ Example:
      */
     fireLasers: function() {
       this.fire('lens-u-colorpicker-lasers', {sound: 'Pew pew!'});
+    },
+    accentClass: function(index){
+      return 'accent'+index;
     }
 
   });
