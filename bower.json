@@ -22,7 +22,8 @@
   "dependencies": {
     "flexi-color-picker": "DavidDurman/FlexiColorPicker",
     "iron-input": "polymerelements/iron-input#~1.0.3",
-    "polymer": "Polymer/polymer#^1.0.0"
+    "polymer": "Polymer/polymer#~1.1.0",
+    "lenses-styles": "lenses/lenses-styles"
   },
   "devDependencies": {
     "iron-component-page": "PolymerElements/iron-component-page#^1.0.0",
