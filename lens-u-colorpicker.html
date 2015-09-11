@@ -26,22 +26,20 @@ Example:
   <style>
     :host {
       display: block;
+      font-family: sans-serif;
       box-sizing: border-box;
-      width: 300px;
-      height: 300px;
-      
+      width: 100%;
+      height: 100%;
       background-color: var(--background);
     }
-
-    .fill-background {
-      
-    }
-
 
     #color {
       height: 26px;
       width: 100%;
+      padding: 3px;
+      box-sizing: border-box;
       background-color: var(--selected-color);
+      color: var(--contrast-color);
     }
 
     .swatch {
@@ -49,37 +47,32 @@ Example:
       height: 18px;
       border-radius: 50%;
       display: inline-block;
-      /*border: 1px solid #eee;*/
+      cursor: pointer;
+      margin-top: 2px;
+      
     }
 
-/*    .accent0 {
-      background-color: var(--accent0);
+    .swatch-container {
+      min-height: 26px;
+      padding: 3px 5px;
+      box-sizing: border-box;
     }
-
-    .accent1 {
-      background-color: var(--accent1);
-    }
-  
-    .accent2 {
-      background-color: var(--accent2);
-    }*/
-
   </style>
 
   <template>
     <div id="color">{{color}}</div>
-    <div class="fill-background">
-      <span class="accent0 swatch" on-click="_chooseColor"></span>
-      <span class="accent1 swatch"></span>
-      <span class="accent2 swatch"></span>
-      <span class="accent3 swatch"></span>
-      <span class="accent4 swatch"></span>
-      <span class="accent5 swatch"></span>
-      <span class="accent6 swatch"></span>
-      <span class="accent7 swatch"></span>
-      <span class="accent8 swatch"></span>
-      <span class="accent9 swatch"></span>
-      <span class="accent10 swatch"></span>
+    <div class="swatch-container">
+      <span class="bg-accent0 swatch" on-click="_chooseColor"></span>
+      <span class="bg-accent1 swatch" on-click="_chooseColor"></span>
+      <span class="bg-accent2 swatch" on-click="_chooseColor"></span>
+      <span class="bg-accent3 swatch" on-click="_chooseColor"></span>
+      <span class="bg-accent4 swatch" on-click="_chooseColor"></span>
+      <span class="bg-accent5 swatch" on-click="_chooseColor"></span>
+      <span class="bg-accent6 swatch" on-click="_chooseColor"></span>
+      <span class="bg-accent7 swatch" on-click="_chooseColor"></span>
+      <span class="bg-accent8 swatch" on-click="_chooseColor"></span>
+      <span class="bg-accent9 swatch" on-click="_chooseColor"></span>
+      <span class="bg-accent10 swatch" on-click="_chooseColor"></span>
     </div>
     <div id="picker" class="cp-small"></div>
   </template>
@@ -100,7 +93,7 @@ Example:
        */
       color:  {
         type: String,
-        value: '',
+        value: '#FFFFFF',
         // observer: 'colorChanged'
       },
     },
@@ -113,28 +106,30 @@ Example:
     _changeColor: function(){
       
       this.customStyle['--selected-color'] = this.color;
-      console.log(this.customStyle);
-      var bodyStyles = window.getComputedStyle(document.body);
-      var fooBar = bodyStyles.getPropertyValue('--accent0');
-      console.log(fooBar);
-      console.log(bodyStyles);
+      this.customStyle['--contrast-color'] = this._contrastColor(this.color);
+      
       // Updates the color reflected in stylesheet. Why doesn't this.updateStyles() work, like suggested in the docs?
       Polymer.updateStyles();
     },
+    _contrastColor: function(colorToContrast){
+      // Note: Hexcodes where the first character is a number less than 5 tend to be dark colors, so white would be the contrast color.
+      
+      var hexMatch = colorToContrast.match(/#(\d)/); // Creates a match group for the first character in hex code if it is a digit.
+      var contrastColor = '#000000'; // Sets default contrast color to black.
+      if (hexMatch){
+        if (parseInt(hexMatch[1]) < 5 ){
+          contrastColor = '#FFFFFF'; // The selected color is dark, so set contrast color to be white.
+        }
+      } 
+      return contrastColor;
+    },
     ready: function() {
-      this.customStyle['--selected-color'] = 'pink';
-      this.themeColors = ['green', 'yellow', 'blue'];
-      // `ready` is called after all elements have been configured, but
-      // propagates bottom-up. This element's children are ready, but parents
-      // are not.
-      //
-      // This is the point where you should make modifications to the DOM (when
-      // necessary), or kick off any processes the element wants to perform.
+      this.customStyle['--selected-color'] = this.color;
+      
       var colorPicker = ColorPicker(this.$.picker, function(hex, hsv, rgb) {
           this.color = hex;
         }.bind(this));
 
-      console.log(colorPicker);
       this.updateStyles();
     },
 
@@ -187,12 +182,34 @@ Example:
     accentClass: function(index){
       return 'accent'+index;
     },
-    _chooseColor: function(e, detail, sender){
-      console.log(this);
-      console.log(e);
-      console.log(detail);
-      console.log(sender);
+    _chooseColor: function(e, detail){
+      var swatchEl = e.path[0];
+      var rgb = window.getComputedStyle(swatchEl).backgroundColor;
 
+      var hex = this._rgbToHex(rgb);
+      if (hex){
+        this.color = hex;
+        this._changeColor();
+      }
+    },
+    _rgbToHex: function(rgb){
+      var hexChars = '0123456789ABCDEF';
+      var rgb = rgb.match(/^rgb\((\d+),\s*(\d+),\s*(\d+)\)$/);
+
+      function hex(x) {
+        return isNaN(x) ? "00" : hexChars[(x - x % 16) / 16] + hexChars[x % 16];
+      }
+
+      if (rgb){
+        var r = hex(rgb[1]);
+        var g = hex(rgb[2])
+        var b =  hex(rgb[3]);
+        var hex = '#' + r + g + b;
+        return hex;
+      } else {
+        return;
+      }
+      
     }
 
   });
