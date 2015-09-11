@@ -9,6 +9,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 -->
 <link rel="import" href="../polymer/polymer.html">
 <link rel="import" href="../iron-icons/iron-icons.html">
+<link rel="import" href="../iron-collapse/iron-collapse.html">
 <link rel="import" href="../lenses-styles/theme-styles.html">
 
 
@@ -64,7 +65,8 @@ Example:
   </style>
 
   <template>
-    <div id="color"><span>{{color}}</span> <iron-icon icon="arrow-drop-down"></iron-icon></div>
+    <div id="color"><span>{{color}}</span> <iron-icon icon="arrow-drop-down" on-click="toggleCollapse"></iron-icon></div>
+    <iron-collapse id="collapse">
     <div class="swatch-container">
       <span class="bg-accent0 swatch" on-click="_chooseColor"></span>
       <span class="bg-accent1 swatch" on-click="_chooseColor"></span>
@@ -79,6 +81,7 @@ Example:
       <span class="bg-accent10 swatch" on-click="_chooseColor"></span>
     </div>
     <div id="picker" class="cp-small"></div>
+    </iron-collapse>
   </template>
 
 </dom-module>
@@ -104,6 +107,9 @@ Example:
     listeners: {
       'picker.tap': '_changeColor',
       'picker.track': '_changeColor'
+    },
+    toggleCollapse: function(){
+      this.$.collapse.toggle();
     },
 
     // Element Lifecycle
@@ -131,7 +137,7 @@ Example:
       this.customStyle['--selected-color'] = this.color;
       
       var colorPicker = ColorPicker(this.$.picker, function(hex, hsv, rgb) {
-          this.color = hex;
+          this.color = hex.toUpperCase();
         }.bind(this));
 
       this.updateStyles();
