@@ -57,10 +57,14 @@ Example:
       padding: 3px 5px;
       box-sizing: border-box;
     }
+
+    iron-icon {
+      cursor: pointer;
+    }
   </style>
 
   <template>
-    <div id="color">{{color}}</div>
+    <div id="color"><span>{{color}}</span> <iron-icon icon="arrow-drop-down"></iron-icon></div>
     <div class="swatch-container">
       <span class="bg-accent0 swatch" on-click="_chooseColor"></span>
       <span class="bg-accent1 swatch" on-click="_chooseColor"></span>
