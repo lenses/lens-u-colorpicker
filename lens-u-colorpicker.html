@@ -23,50 +23,97 @@ Example:
 @demo
 -->
 <dom-module id="lens-u-colorpicker">
-  <style include="theme-styles"></style>
-  <style>
-    :host {
-      display: block;
-      font-family: sans-serif;
-      box-sizing: border-box;
-      width: 100%;
-      height: 100%;
-      background-color: var(--background);
-    }
-
-    #color {
-      height: 26px;
-      width: 100%;
-      padding: 3px;
-      box-sizing: border-box;
-      background-color: var(--selected-color);
-      color: var(--contrast-color);
-    }
-
-    .swatch {
-      width: 18px;
-      height: 18px;
-      border-radius: 50%;
-      display: inline-block;
-      cursor: pointer;
-      margin-top: 2px;
-      
-    }
-
-    .swatch-container {
-      min-height: 26px;
-      padding: 3px 5px;
-      box-sizing: border-box;
-    }
-
-    iron-icon {
-      cursor: pointer;
-    }
-  </style>
-
   <template>
+    <style include="theme-styles"></style>
+    <style>
+      :host {
+        display: block;
+        font-family: sans-serif;
+        box-sizing: border-box;
+        /*width: 300px;*/
+        /*height: 300px;*/
+        width: 100%;
+        height: 100%;
+        display: inline-block;
+      }
+
+      #color {
+        display: inline-block;
+        height: 26px;
+        width: 100%;
+        padding: 3px;
+        box-sizing: border-box;
+        background-color: var(--selected-color);
+        color: var(--contrast-color);
+      }
+
+      iron-icon {
+        cursor: pointer;
+        background-color: color: var(--contrast-color);
+        float: right;
+      }
+
+      .swatch-container {
+        min-height: 26px;
+        padding: 3px 5px;
+        box-sizing: border-box;
+        background-color: var(--background);
+      }
+
+      .swatch {
+        width: 18px;
+        height: 18px;
+        border-radius: 50%;
+        display: inline-block;
+        cursor: pointer;
+        margin-top: 2px;
+        
+      }
+
+      #colorpicker {
+        background-color: white;
+        width: 100%;
+      }
+
+      /* Note: It seems that /deep/ combinator is required to select classes within the #colorpicker div */
+      #colorpicker /deep/ .picker-wrapper, #colorpicker /deep/ .slide-wrapper {
+        display: inline-block;
+        float: left;
+        box-sizing: border-box;
+        cursor: pointer;
+      }
+
+      #colorpicker /deep/ .picker-wrapper {
+        width: 85%;
+      }
+
+      #colorpicker /deep/ .slide-wrapper {
+        width: 15%;
+        border-left: 2px solid white;
+      }
+
+      #colorpicker /deep/ .picker, #colorpicker /deep/ .slide {
+        width: 100%;
+        height: 200px;
+      }
+
+     /* TODO: These indicators do not move with the chosen color for some reason. Disabled temporarily */
+     /* #colorpicker /deep/ .picker-indicator {
+        width: 5px;
+        height: 5px;
+        border: 2px solid white 1px solid black;
+      }
+
+      #colorpicker /deep/ .slide-indicator {
+        width: 100%;
+        height: 5px;
+        left: 0px;
+        background-color: black;
+      }
+  */
+    </style>
     <div id="color"><span>{{color}}</span> <iron-icon icon="arrow-drop-down" on-click="toggleCollapse"></iron-icon></div>
-    <iron-collapse id="collapse">
+    <iron-collapse id="collapse" opened="true">
     <div class="swatch-container">
       <span class="bg-accent0 swatch" on-click="_chooseColor"></span>
       <span class="bg-accent1 swatch" on-click="_chooseColor"></span>
@@ -80,7 +127,7 @@ Example:
       <span class="bg-accent9 swatch" on-click="_chooseColor"></span>
       <span class="bg-accent10 swatch" on-click="_chooseColor"></span>
     </div>
-    <div id="picker" class="cp-small"></div>
+    <div id="colorpicker"></div>
     </iron-collapse>
   </template>
 
@@ -105,8 +152,8 @@ Example:
       },
     },
     listeners: {
-      'picker.tap': '_changeColor',
-      'picker.track': '_changeColor'
+      'colorpicker.tap': '_changeColor',
+      'colorpicker.track': '_changeColor'
     },
     toggleCollapse: function(){
       this.$.collapse.toggle();
@@ -136,9 +183,9 @@ Example:
     ready: function() {
       this.customStyle['--selected-color'] = this.color;
       
-      var colorPicker = ColorPicker(this.$.picker, function(hex, hsv, rgb) {
+      var colorPicker = ColorPicker(this.$.colorpicker, function(hex, hsv, rgb) {
           this.color = hex.toUpperCase();
-        }.bind(this));
+      }.bind(this));
 
       this.updateStyles();
     },
