@@ -1,26 +1,16 @@
-<!--
-@license
-Copyright (c) 2015 The Polymer Project Authors. All rights reserved.
-This code may only be used under the BSD style license found at http://polymer.github.io/LICENSE.txt
-The complete set of authors may be found at http://polymer.github.io/AUTHORS.txt
-The complete set of contributors may be found at http://polymer.github.io/CONTRIBUTORS.txt
-Code distributed by Google as part of the polymer project is also
-subject to an additional IP rights grant found at http://polymer.github.io/PATENTS.txt
--->
 <link rel="import" href="../polymer/polymer.html">
 <link rel="import" href="../iron-icons/iron-icons.html">
 <link rel="import" href="../iron-collapse/iron-collapse.html">
 <link rel="import" href="../lenses-styles/theme-styles.html">
 
-
 <!--
-An element providing a solution to no problem in particular.
+'lens-u-colorpicker' is a colorpicker element, that allows the user to choose a color from a
+color palette or a colorpicker.
 
 Example:
 
-    <lens-u-colorpicker></lens-u-colorpicker>
+    <lens-u-colorpicker colorPalette='["red", "white", "blue"]'></lens-u-colorpicker>
 
-@demo
 -->
 <dom-module id="lens-u-colorpicker">
   <template>
@@ -30,8 +20,6 @@ Example:
         display: block;
         font-family: sans-serif;
         box-sizing: border-box;
-        /*width: 300px;*/
-        /*height: 300px;*/
         width: 100%;
         height: 100%;
         display: inline-block;
@@ -114,27 +102,27 @@ Example:
     </style>
     <div id="color"><span>{{color}}</span> <iron-icon icon="arrow-drop-down" on-click="toggleCollapse"></iron-icon></div>
     <iron-collapse id="collapse" opened="true">
-    <div class="swatch-container">
-      <template is="dom-if" if="{{!presetColors.length}}">
-        <span class="bg-accent0 swatch" on-click="_chooseColor"></span>
-        <span class="bg-accent1 swatch" on-click="_chooseColor"></span>
-        <span class="bg-accent2 swatch" on-click="_chooseColor"></span>
-        <span class="bg-accent3 swatch" on-click="_chooseColor"></span>
-        <span class="bg-accent4 swatch" on-click="_chooseColor"></span>
-        <span class="bg-accent5 swatch" on-click="_chooseColor"></span>
-        <span class="bg-accent6 swatch" on-click="_chooseColor"></span>
-        <span class="bg-accent7 swatch" on-click="_chooseColor"></span>
-        <span class="bg-accent8 swatch" on-click="_chooseColor"></span>
-        <span class="bg-accent9 swatch" on-click="_chooseColor"></span>
-        <span class="bg-accent10 swatch" on-click="_chooseColor"></span>
-      </template>
-      <template is="dom-if" if="{{presetColors.length}}">
-        <template is="dom-repeat" items="{{presetColors}}" as="color">
-          <span class="swatch" style$="{{_applyColor(color)}}" on-click="_chooseColor"></span>
+      <div class="swatch-container">
+        <template is="dom-if" if="{{!colorPalette.length}}">
+          <span class="bg-accent0 swatch" on-click="_chooseColor"></span>
+          <span class="bg-accent1 swatch" on-click="_chooseColor"></span>
+          <span class="bg-accent2 swatch" on-click="_chooseColor"></span>
+          <span class="bg-accent3 swatch" on-click="_chooseColor"></span>
+          <span class="bg-accent4 swatch" on-click="_chooseColor"></span>
+          <span class="bg-accent5 swatch" on-click="_chooseColor"></span>
+          <span class="bg-accent6 swatch" on-click="_chooseColor"></span>
+          <span class="bg-accent7 swatch" on-click="_chooseColor"></span>
+          <span class="bg-accent8 swatch" on-click="_chooseColor"></span>
+          <span class="bg-accent9 swatch" on-click="_chooseColor"></span>
+          <span class="bg-accent10 swatch" on-click="_chooseColor"></span>
         </template>
-      </template>
-    </div>
-    <div id="colorpicker"></div>
+        <template is="dom-if" if="{{colorPalette.length}}">
+          <template is="dom-repeat" items="{{colorPalette}}" as="color">
+            <span class="swatch" style$="{{_styleBgColor(color)}}" on-click="_chooseColor"></span>
+          </template>
+        </template>
+      </div>
+      <div id="colorpicker"></div>
     </iron-collapse>
   </template>
 
@@ -143,32 +131,44 @@ Example:
 <script>
 
   Polymer({
-
     is: 'lens-u-colorpicker',
 
     properties: {
-
       /**
-       * `fancy` indicates that the element should don a monocle and tophat,
-       * while checking its pocket watch.
+       * The chosen color from the colorpicker.
+       *
+       * @attribute color
+       * @type String
+       * @default '#FFFFFF'
        */
       color:  {
         type: String,
-        value: '#FFFFFF',
-        // observer: 'colorChanged'
+        value: '#FFFFFF'
       },
-      presetColors: {
+
+      /**
+       * An array of preset colors to be included as swatches next to the colorpicker.
+       * 
+       * @attribute colorPalette
+       * @type Array
+       * @default []
+       */
+      colorPalette: {
+        type: Array,
         value: function(){
           return [];
-        },
-        type: Array
+        }
       }
     },
+
     listeners: {
       'colorpicker.tap': '_changeColor',
       'colorpicker.track': '_changeColor'
     },
 
+    /**
+     * Initial set up of colorpicker.
+     */
     ready: function() {
       this.customStyle['--selected-color'] = this.color;
       
@@ -179,90 +179,89 @@ Example:
       this.updateStyles();
     },
 
-    // Element Behavior
-
     /**
-     * The `lens-u-colorpicker-lasers` event is fired whenever `fireLasers` is called.
-     *
-     * @event lens-u-colorpicker-lasers
-     * @detail {{sound: String}}
+     * Expands and collapses the colorpicker.
      */
-
-    /**
-     * Sometimes it's just nice to say hi.
-     *
-     * @param {string} greeting A positive greeting.
-     * @return {string} The full greeting.
-     */
-    sayHello: function(greeting) {
-      var response = greeting || 'Hello World!';
-      return 'lens-u-colorpicker says, ' + response;
-    },
-
-    /**
-     * Attempts to destroy this element's enemies with an any beam of light!
-     *
-     * Or, at least, dispatches an event in the vain hope that someone else will
-     * do the zapping.
-     */
-    fireLasers: function() {
-      this.fire('lens-u-colorpicker-lasers', {sound: 'Pew pew!'});
-    },
-    accentClass: function(index){
-      return 'accent'+index;
-    },
     toggleCollapse: function(){
       this.$.collapse.toggle();
     },
-    _applyColor: function(color){
-      console.log(color);
-      console.log("background-color: " + color)
-      return "background-color: " + color + ";";
-    },
 
-    _changeColor: function(){
-      
-      this.customStyle['--selected-color'] = this.color;
-      this.customStyle['--contrast-color'] = this._contrastColor(this.color);
-      
-      // Updates the color reflected in stylesheet. Why doesn't this.updateStyles() work, like suggested in the docs?
-      Polymer.updateStyles();
-    },
-    _contrastColor: function(colorToContrast){
-      // Note: Hexcodes where the first character is a number less than 5 tend to be dark colors, so white would be the contrast color.
-      
-      var hexMatch = colorToContrast.match(/#(\d)/); // Creates a match group for the first character in hex code if it is a digit.
-      var contrastColor = '#000000'; // Sets default contrast color to black.
-      if (hexMatch){
-        if (parseInt(hexMatch[1]) < 5 ){
-          contrastColor = '#FFFFFF'; // The selected color is dark, so set contrast color to be white.
-        }
-      } 
-      return contrastColor;
-    },
+    /**
+     * Selects the color when a swatch is clicked.
+     */
     _chooseColor: function(e, detail){
-      var swatchEl = e.path[0];
-      var rgb = window.getComputedStyle(swatchEl).backgroundColor;
+      var swatchEl = e.path[0],
+          rgb = window.getComputedStyle(swatchEl).backgroundColor,
+          hex = this._rgbToHex(rgb);
 
-      var hex = this._rgbToHex(rgb);
       if (hex){
         this.color = hex;
         this._changeColor();
       }
     },
+
+    /**
+     * Updates color in stylesheet when a new color is selected.
+     */
+    _changeColor: function(){
+      
+      this.customStyle['--selected-color'] = this.color;
+      this.customStyle['--contrast-color'] = this._getContrastColor(this.color);
+      
+      // Updates the color reflected in stylesheet. Why doesn't this.updateStyles() work, like suggested in the docs?
+      Polymer.updateStyles();
+    },
+
+    /**
+     * Applies background color to swatches.
+     * 
+     * @param  {String} color 
+     * @return {String} Inline style property for background color.
+     */
+    _styleBgColor: function(color){
+      return "background-color: " + color + ";";
+    },
+
+    /**
+     * Determines which color (black or white) will contrast to the selected color, such that text will always be visible against it.
+     * 
+     * @param  {String} colorToContrast ex: '#333333'
+     * @return {String} contrastColor   '#ffffff' or '#000000'
+     */
+    _getContrastColor: function(colorToContrast){
+      // Note: Hexcodes where the first character is a number less than 5 tend to be dark colors, so white would be the contrast color.
+      
+      var hexMatch = colorToContrast.match(/#(\d)/), // Creates a match group for the first character in hex code if it is a digit.
+          getContrastColor = '#000000'; // Sets default contrast color to black.
+      
+      if (hexMatch){
+        if (parseInt(hexMatch[1]) < 5 ){
+          getContrastColor = '#FFFFFF'; // The selected color is dark, so set contrast color to be white.
+        }
+      } 
+
+      return getContrastColor;
+    },
+
+    /**
+     * Converts RGB color to hex because the selected hex code is displayed. 
+     * 
+     * @param  {String} rgb ex: 'rgb(255, 255, 255)'
+     * @return {String} hex ex: '#ffffff'
+     */
     _rgbToHex: function(rgb){
-      var hexChars = '0123456789ABCDEF';
-      var rgb = rgb.match(/^rgb\((\d+),\s*(\d+),\s*(\d+)\)$/);
+      var hexChars = '0123456789ABCDEF',
+          rgb = rgb.match(/^rgb\((\d+),\s*(\d+),\s*(\d+)\)$/);
 
       function hex(x) {
         return isNaN(x) ? "00" : hexChars[(x - x % 16) / 16] + hexChars[x % 16];
       }
 
       if (rgb){
-        var r = hex(rgb[1]);
-        var g = hex(rgb[2])
-        var b =  hex(rgb[3]);
-        var hex = '#' + r + g + b;
+        var r = hex(rgb[1]),
+            g = hex(rgb[2]),
+            b =  hex(rgb[3]),
+            hex = '#' + r + g + b;
         return hex;
       } else {
         return;
