@@ -115,17 +115,24 @@ Example:
     <div id="color"><span>{{color}}</span> <iron-icon icon="arrow-drop-down" on-click="toggleCollapse"></iron-icon></div>
     <iron-collapse id="collapse" opened="true">
     <div class="swatch-container">
-      <span class="bg-accent0 swatch" on-click="_chooseColor"></span>
-      <span class="bg-accent1 swatch" on-click="_chooseColor"></span>
-      <span class="bg-accent2 swatch" on-click="_chooseColor"></span>
-      <span class="bg-accent3 swatch" on-click="_chooseColor"></span>
-      <span class="bg-accent4 swatch" on-click="_chooseColor"></span>
-      <span class="bg-accent5 swatch" on-click="_chooseColor"></span>
-      <span class="bg-accent6 swatch" on-click="_chooseColor"></span>
-      <span class="bg-accent7 swatch" on-click="_chooseColor"></span>
-      <span class="bg-accent8 swatch" on-click="_chooseColor"></span>
-      <span class="bg-accent9 swatch" on-click="_chooseColor"></span>
-      <span class="bg-accent10 swatch" on-click="_chooseColor"></span>
+      <template is="dom-if" if="{{!presetColors.length}}">
+        <span class="bg-accent0 swatch" on-click="_chooseColor"></span>
+        <span class="bg-accent1 swatch" on-click="_chooseColor"></span>
+        <span class="bg-accent2 swatch" on-click="_chooseColor"></span>
+        <span class="bg-accent3 swatch" on-click="_chooseColor"></span>
+        <span class="bg-accent4 swatch" on-click="_chooseColor"></span>
+        <span class="bg-accent5 swatch" on-click="_chooseColor"></span>
+        <span class="bg-accent6 swatch" on-click="_chooseColor"></span>
+        <span class="bg-accent7 swatch" on-click="_chooseColor"></span>
+        <span class="bg-accent8 swatch" on-click="_chooseColor"></span>
+        <span class="bg-accent9 swatch" on-click="_chooseColor"></span>
+        <span class="bg-accent10 swatch" on-click="_chooseColor"></span>
+      </template>
+      <template is="dom-if" if="{{presetColors.length}}">
+        <template is="dom-repeat" items="{{presetColors}}" as="color">
+          <span class="swatch" style$="{{_applyColor(color)}}" on-click="_chooseColor"></span>
+        </template>
+      </template>
     </div>
     <div id="colorpicker"></div>
     </iron-collapse>
@@ -150,36 +157,18 @@ Example:
         value: '#FFFFFF',
         // observer: 'colorChanged'
       },
+      presetColors: {
+        value: function(){
+          return [];
+        },
+        type: Array
+      }
     },
     listeners: {
       'colorpicker.tap': '_changeColor',
       'colorpicker.track': '_changeColor'
     },
-    toggleCollapse: function(){
-      this.$.collapse.toggle();
-    },
 
-    // Element Lifecycle
-    _changeColor: function(){
-      
-      this.customStyle['--selected-color'] = this.color;
-      this.customStyle['--contrast-color'] = this._contrastColor(this.color);
-      
-      // Updates the color reflected in stylesheet. Why doesn't this.updateStyles() work, like suggested in the docs?
-      Polymer.updateStyles();
-    },
-    _contrastColor: function(colorToContrast){
-      // Note: Hexcodes where the first character is a number less than 5 tend to be dark colors, so white would be the contrast color.
-      
-      var hexMatch = colorToContrast.match(/#(\d)/); // Creates a match group for the first character in hex code if it is a digit.
-      var contrastColor = '#000000'; // Sets default contrast color to black.
-      if (hexMatch){
-        if (parseInt(hexMatch[1]) < 5 ){
-          contrastColor = '#FFFFFF'; // The selected color is dark, so set contrast color to be white.
-        }
-      } 
-      return contrastColor;
-    },
     ready: function() {
       this.customStyle['--selected-color'] = this.color;
       
@@ -188,23 +177,6 @@ Example:
       }.bind(this));
 
       this.updateStyles();
-    },
-
-    attached: function() {
-
-      // `attached` fires once the element and its parents have been inserted
-      // into a document.
-      //
-      // This is a good place to perform any work related to your element's
-      // visual state or active behavior (measuring sizes, beginning animations,
-      // loading resources, etc).
-    },
-
-    detached: function() {
-      // The analog to `attached`, `detached` fires when the element has been
-      // removed from a document.
-      //
-      // Use this to clean up anything you did in `attached`.
     },
 
     // Element Behavior
@@ -238,6 +210,35 @@ Example:
     },
     accentClass: function(index){
       return 'accent'+index;
+    },
+    toggleCollapse: function(){
+      this.$.collapse.toggle();
+    },
+    _applyColor: function(color){
+      console.log(color);
+      console.log("background-color: " + color)
+      return "background-color: " + color + ";";
+    },
+
+    _changeColor: function(){
+      
+      this.customStyle['--selected-color'] = this.color;
+      this.customStyle['--contrast-color'] = this._contrastColor(this.color);
+      
+      // Updates the color reflected in stylesheet. Why doesn't this.updateStyles() work, like suggested in the docs?
+      Polymer.updateStyles();
+    },
+    _contrastColor: function(colorToContrast){
+      // Note: Hexcodes where the first character is a number less than 5 tend to be dark colors, so white would be the contrast color.
+      
+      var hexMatch = colorToContrast.match(/#(\d)/); // Creates a match group for the first character in hex code if it is a digit.
+      var contrastColor = '#000000'; // Sets default contrast color to black.
+      if (hexMatch){
+        if (parseInt(hexMatch[1]) < 5 ){
+          contrastColor = '#FFFFFF'; // The selected color is dark, so set contrast color to be white.
+        }
+      } 
+      return contrastColor;
     },
     _chooseColor: function(e, detail){
       var swatchEl = e.path[0];
