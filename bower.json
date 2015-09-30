@@ -2,7 +2,8 @@
   "name": "lens-u-colorpicker",
   "version": "1.0.0",
   "authors": [
-    "Anonymous <anonymous@example.com>"
+    "Nisha Batra",
+    "Lenses team"
   ],
   "description": "An element providing a solution to no problem in particular.",
   "keywords": [
@@ -12,8 +13,7 @@
     "seed"
   ],
   "main": "lens-u-colorpicker.html",
-  "license": "http://polymer.github.io/LICENSE.txt",
-  "homepage": "https://github.com/<USERNAME>/seed-element/",
+  "homepage": "https://github.com/lenses/lens-u-colorpicker",
   "ignore": [
     "/.*",
     "/test/",
